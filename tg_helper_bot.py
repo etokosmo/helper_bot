@@ -1,12 +1,14 @@
 import logging
 import os
 from functools import partial
+from time import sleep
 
 from environs import Env
-from google.cloud import dialogflow
 from telegram import ForceReply, Update
 from telegram.ext import Application, CommandHandler, ContextTypes, \
     MessageHandler, filters
+
+from libs.helper_bot_utils import detect_intent_texts
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -45,24 +47,6 @@ async def process_message(update: Update,
     await update.message.reply_text(response_message)
 
 
-async def detect_intent_texts(project_id: str,
-                              session_id: str,
-                              text: str,
-                              language_code: str) -> str:
-    """Returns the result of detect intent with texts as inputs."""
-    session_client = dialogflow.SessionsClient()
-    session = session_client.session_path(project_id, session_id)
-
-    text_input = dialogflow.TextInput(text=text,
-                                      language_code=language_code)
-    query_input = dialogflow.QueryInput(text=text_input)
-
-    response = session_client.detect_intent(
-        request={"session": session, "query_input": query_input}
-    )
-    return response.query_result.fulfillment_text
-
-
 def main() -> None:
     """Start the bot."""
     env = Env()
@@ -89,3 +73,10 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    while True:
+        try:
+            main()
+        except Exception as error:
+            logger.error("Бот упал с ошибкой:")
+            logger.error(error)
+            sleep(3600)
