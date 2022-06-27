@@ -22,7 +22,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /start is issued."""
     user = update.effective_user
     await update.message.reply_html(
-        rf"Здравствуйте, {user.mention_html()}!",
+        rf"Здравствуйте, {user.mention_html()}! Чем можем помочь?",
         reply_markup=ForceReply(selective=True),
     )
 
@@ -42,7 +42,7 @@ async def process_message(update: Update,
         project_id,
         session_id,
         update.message.text,
-        "ru-RU"
+        social_network="еп"
     )
     await update.message.reply_text(response_message)
 

@@ -21,13 +21,14 @@ async def process_message(event, vk_api, project_id):
         project_id,
         event.user_id,
         event.text,
-        "ru-RU"
+        social_network="vk"
     )
-    vk_api.messages.send(
-        user_id=event.user_id,
-        message=response_message,
-        random_id=random.randint(1, 1000)
-    )
+    if response_message:
+        vk_api.messages.send(
+            user_id=event.user_id,
+            message=response_message,
+            random_id=random.randint(1, 1000)
+        )
 
 
 async def main():
