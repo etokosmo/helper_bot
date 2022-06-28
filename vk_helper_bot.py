@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 import random
 from time import sleep
 
@@ -15,6 +16,7 @@ logging.basicConfig(
     level=logging.DEBUG
 )
 logger = logging.getLogger(__name__)
+BASE_DIR = os.path.dirname(__file__) or '.'
 
 
 async def process_message(event: vk.longpoll.Event,
@@ -41,6 +43,10 @@ async def main():
     env.read_env()
     vk_api_token = env("VK_API_TOKEN")
     project_id = env("PROJECT_ID")
+    GOOGLE_APPLICATION_CREDENTIALS = os.path.join(
+        BASE_DIR,
+        env("GOOGLE_APPLICATION_CREDENTIALS")
+    )
 
     vk_session = vk.VkApi(token=vk_api_token)
     vk_api = vk_session.get_api()

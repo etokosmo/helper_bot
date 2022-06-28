@@ -43,7 +43,7 @@ pip install -r requirements.txt
 
 - Запишите переменные окружения в файле `.env` в формате КЛЮЧ=ЗНАЧЕНИЕ
 
-`GOOGLE_APPLICATION_CREDENTIALS` Путь до файла с JSON-ключом. Как его получить указано в этом [руководстве](https://cloud.google.com/docs/authentication/getting-started).
+`GOOGLE_APPLICATION_CREDENTIALS` Название файла с JSON-ключом. Как его получить указано в этом [руководстве](https://cloud.google.com/docs/authentication/getting-started). Должен лежать в корне проекта.
 
 `PROJECT_ID` ID Google проекта.
 

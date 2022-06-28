@@ -55,7 +55,6 @@ def main() -> None:
     telegram_api_token = env("TELEGRAM_API_TOKEN")
     GOOGLE_APPLICATION_CREDENTIALS = os.path.join(
         BASE_DIR,
-        "secret",
         env("GOOGLE_APPLICATION_CREDENTIALS")
     )
     project_id = env("PROJECT_ID")
