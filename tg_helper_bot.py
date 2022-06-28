@@ -11,8 +11,9 @@ from telegram.ext import Application, CommandHandler, ContextTypes, \
 from libs.helper_bot_utils import detect_intent_texts
 
 logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.INFO
+    format='%(asctime)s : %(message)s',
+    datefmt='%d/%m/%Y %H:%M:%S',
+    level=logging.DEBUG
 )
 logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(__file__) or '.'
@@ -35,14 +36,14 @@ async def help_command(update: Update,
 
 async def process_message(update: Update,
                           context: ContextTypes.DEFAULT_TYPE,
-                          project_id) -> None:
-    """Echo the user message."""
+                          project_id: str) -> None:
+    """Answer the user message."""
     session_id = str(update.effective_user.id)
     response_message = await detect_intent_texts(
         project_id,
         session_id,
         update.message.text,
-        social_network="еп"
+        social_network="tg"
     )
     await update.message.reply_text(response_message)
 
