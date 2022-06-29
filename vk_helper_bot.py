@@ -55,7 +55,7 @@ async def main():
         BASE_DIR,
         env("GOOGLE_APPLICATION_CREDENTIALS")
     )
-    project_id = env("PROJECT_ID")
+    google_project_id = env("GOOGLE_PROJECT_ID")
 
     vk_session = vk.VkApi(token=vk_api_token)
     vk_api = vk_session.get_api()
@@ -65,7 +65,7 @@ async def main():
 
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-            await process_message(event, vk_api, project_id)
+            await process_message(event, vk_api, google_project_id)
 
 
 if __name__ == "__main__":

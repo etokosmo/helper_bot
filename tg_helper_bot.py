@@ -79,10 +79,10 @@ def main() -> None:
         BASE_DIR,
         env("GOOGLE_APPLICATION_CREDENTIALS")
     )
-    project_id = env("PROJECT_ID")
+    google_project_id = env("GOOGLE_PROJECT_ID")
 
     application = Application.builder().token(telegram_api_token).build()
-    process_message_with_args = partial(process_message, project_id=project_id)
+    process_message_with_args = partial(process_message, project_id=google_project_id)
     application.add_handler(CommandHandler("start", start))
 
     error_handler_with_arg = partial(error_handler,
