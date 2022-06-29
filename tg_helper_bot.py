@@ -46,11 +46,10 @@ async def process_message(update: Update,
                           project_id: str) -> None:
     """Answer the user message."""
     session_id = str(update.effective_user.id)
-    response_message = await detect_intent_texts(
+    response_message, is_fallback_intent = await detect_intent_texts(
         project_id,
         session_id,
         update.message.text,
-        social_network="tg"
     )
     await update.message.reply_text(response_message)
 

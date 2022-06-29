@@ -18,18 +18,18 @@ async def process_message(event: vk.longpoll.Event,
                           vk_api: vk.vk_api.VkApiMethod,
                           project_id: str) -> None:
     """Answer the user message."""
-    response_message = await detect_intent_texts(
+    response_message, is_fallback_intent = await detect_intent_texts(
         project_id,
         event.user_id,
         event.text,
-        social_network="vk"
     )
-    if response_message:
-        vk_api.messages.send(
-            user_id=event.user_id,
-            message=response_message,
-            random_id=random.randint(1, 1000)
-        )
+    if not is_fallback_intent:
+        if response_message:
+            vk_api.messages.send(
+                user_id=event.user_id,
+                message=response_message,
+                random_id=random.randint(1, 1000)
+            )
 
 
 async def main():
