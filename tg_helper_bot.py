@@ -1,11 +1,13 @@
+import html
 import logging
 import os
+import traceback
 from functools import partial
 
 from environs import Env
 from notifiers.logging import NotificationHandler
 from telegram import ForceReply, Update
-from telegram.error import BadRequest, NetworkError
+from telegram.constants import ParseMode
 from telegram.ext import Application, CommandHandler, ContextTypes, \
     MessageHandler, filters
 
@@ -13,6 +15,21 @@ from libs.helper_bot_utils import detect_intent_texts
 
 logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(__file__) or '.'
+
+
+async def error_handler(update: object,
+                        context: ContextTypes.DEFAULT_TYPE,
+                        telegram_chat_id: str) -> None:
+    """Log the error and send a telegram message to notify the developer."""
+    traceback_message = "".join(
+        traceback.format_exception_only(None, context.error))
+    message = (
+        f"An exception was raised:\n \
+        <pre>{html.escape(traceback_message)}</pre>"
+    )
+    await context.bot.send_message(
+        chat_id=telegram_chat_id, text=message, parse_mode=ParseMode.HTML
+    )
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -41,12 +58,7 @@ async def process_message(update: Update,
         update.message.text,
         social_network="tg"
     )
-
-    try:
-        await update.message.reply_text(response_message)
-    except (BadRequest, NetworkError) as error:
-        logger.error("Бот упал с ошибкой:")
-        logger.error(error)
+    await update.message.reply_text(response_message)
 
 
 def main() -> None:
@@ -80,6 +92,9 @@ def main() -> None:
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
 
+    error_handler_with_arg = partial(error_handler,
+                                     telegram_chat_id=telegram_chat_id)
+    application.add_error_handler(error_handler_with_arg)
     logger.info('TG-бот запущен.')
 
     application.add_handler(
