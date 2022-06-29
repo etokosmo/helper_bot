@@ -11,7 +11,7 @@ from telegram.constants import ParseMode
 from telegram.ext import Application, CommandHandler, ContextTypes, \
     MessageHandler, filters
 
-from libs.helper_bot_utils import detect_intent_texts
+from dialogflow_intents import detect_intent_texts
 
 logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(__file__) or '.'
@@ -81,7 +81,8 @@ def main() -> None:
     google_project_id = env("GOOGLE_PROJECT_ID")
 
     application = Application.builder().token(telegram_api_token).build()
-    process_message_with_args = partial(process_message, project_id=google_project_id)
+    process_message_with_args = partial(process_message,
+                                        project_id=google_project_id)
     application.add_handler(CommandHandler("start", start))
 
     error_handler_with_arg = partial(error_handler,

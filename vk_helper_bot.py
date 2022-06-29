@@ -8,7 +8,7 @@ from environs import Env
 from notifiers.logging import NotificationHandler
 from vk_api.longpoll import VkLongPoll, VkEventType
 
-from libs.helper_bot_utils import detect_intent_texts
+from dialogflow_intents import detect_intent_texts
 
 logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(__file__) or '.'
