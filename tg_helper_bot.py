@@ -41,12 +41,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     )
 
 
-async def help_command(update: Update,
-                       context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Send a message when the command /help is issued."""
-    await update.message.reply_text("Help!")
-
-
 async def process_message(update: Update,
                           context: ContextTypes.DEFAULT_TYPE,
                           project_id: str) -> None:
@@ -90,7 +84,6 @@ def main() -> None:
     application = Application.builder().token(telegram_api_token).build()
     process_message_with_args = partial(process_message, project_id=project_id)
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("help", help_command))
 
     error_handler_with_arg = partial(error_handler,
                                      telegram_chat_id=telegram_chat_id)
