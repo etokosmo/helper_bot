@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 import random
@@ -14,11 +13,11 @@ logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(__file__) or '.'
 
 
-async def process_message(event: vk.longpoll.Event,
-                          vk_api: vk.vk_api.VkApiMethod,
-                          project_id: str) -> None:
+def process_message(event: vk.longpoll.Event,
+                    vk_api: vk.vk_api.VkApiMethod,
+                    project_id: str) -> None:
     """Answer the user message."""
-    response_message, is_fallback_intent = await detect_intent_texts(
+    response_message, is_fallback_intent = detect_intent_texts(
         project_id,
         event.user_id,
         event.text,
@@ -32,7 +31,7 @@ async def process_message(event: vk.longpoll.Event,
             )
 
 
-async def main():
+def main():
     """Start the bot."""
     logging.basicConfig(
         format='%(asctime)s : %(message)s',
@@ -65,8 +64,8 @@ async def main():
 
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-            await process_message(event, vk_api, google_project_id)
+            process_message(event, vk_api, google_project_id)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

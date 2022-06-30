@@ -1,10 +1,10 @@
 from google.cloud import dialogflow
 
 
-async def detect_intent_texts(project_id: str,
-                              session_id: str,
-                              text: str,
-                              language_code: str = "ru-RU") -> (str, bool):
+def detect_intent_texts(project_id: str,
+                        session_id: str,
+                        text: str,
+                        language_code: str = "ru-RU") -> (str, bool):
     """Returns the result of detect intent with texts as inputs."""
     session_client = dialogflow.SessionsClient()
     session = session_client.session_path(project_id, session_id)

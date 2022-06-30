@@ -4,9 +4,9 @@ from functools import partial
 
 from environs import Env
 from notifiers.logging import NotificationHandler
-from telegram import ForceReply, Update
-from telegram.ext import Application, CommandHandler, ContextTypes, \
-    MessageHandler, filters
+from telegram import Update, ForceReply
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, \
+    CallbackContext
 
 from dialogflow_intents import detect_intent_texts
 
@@ -14,32 +14,32 @@ logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(__file__) or '.'
 
 
-async def error_handler(update: object,
-                        context: ContextTypes.DEFAULT_TYPE, ) -> None:
+def error_handler(update: object,
+                  context: CallbackContext) -> None:
     """Log the error and send a telegram message to notify the developer."""
     logger.exception(context.error)
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+def start(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
     user = update.effective_user
-    await update.message.reply_html(
-        rf"Здравствуйте, {user.mention_html()}! Чем можем помочь?",
+    update.message.reply_markdown_v2(
+        fr'Hi {user.mention_markdown_v2()}\!',
         reply_markup=ForceReply(selective=True),
     )
 
 
-async def process_message(update: Update,
-                          context: ContextTypes.DEFAULT_TYPE,
-                          project_id: str) -> None:
+def process_message(update: Update,
+                    context: CallbackContext,
+                    project_id: str) -> None:
     """Answer the user message."""
     session_id = str(update.effective_user.id)
-    response_message, is_fallback_intent = await detect_intent_texts(
+    response_message, is_fallback_intent = detect_intent_texts(
         project_id,
         session_id,
         update.message.text,
     )
-    await update.message.reply_text(response_message)
+    update.message.reply_text(response_message)
 
 
 def main() -> None:
@@ -68,21 +68,20 @@ def main() -> None:
     )
     google_project_id = env("GOOGLE_PROJECT_ID")
 
-    application = Application.builder().token(telegram_api_token).build()
+    updater = Updater(telegram_api_token)
+    dispatcher = updater.dispatcher
+
+    dispatcher.add_handler(CommandHandler("start", start))
     process_message_with_args = partial(process_message,
                                         project_id=google_project_id)
-    application.add_handler(CommandHandler("start", start))
-
-    error_handler_with_arg = partial(error_handler,
-                                     telegram_chat_id=telegram_chat_id)
-    application.add_error_handler(error_handler_with_arg)
+    dispatcher.add_handler(
+        MessageHandler(Filters.text & ~Filters.command,
+                       process_message_with_args))
+    dispatcher.add_error_handler(error_handler)
     logger.info('TG-бот запущен.')
 
-    application.add_handler(
-        MessageHandler(filters.TEXT & ~filters.COMMAND,
-                       process_message_with_args))
-
-    application.run_polling()
+    updater.start_polling()
+    updater.idle()
 
 
 if __name__ == "__main__":
