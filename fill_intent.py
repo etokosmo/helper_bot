@@ -40,10 +40,9 @@ def main():
     with open(INTENTS_JSON_PATH, "r", encoding="utf-8") as intents_json:
         intents = json.load(intents_json)
 
-    for intent in intents:
-        display_name = intent
-        training_phrases_parts = intents.get(intent).get("questions")
-        message_texts = [intents.get(intent).get("answer")]
+    for display_name, intent in intents.items():
+        training_phrases_parts = intent.get("questions")
+        message_texts = [intent.get("answer")]
         create_intent(google_project_id, display_name, training_phrases_parts,
                       message_texts)
 
