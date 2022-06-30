@@ -1,13 +1,10 @@
-import html
 import logging
 import os
-import traceback
 from functools import partial
 
 from environs import Env
 from notifiers.logging import NotificationHandler
 from telegram import ForceReply, Update
-from telegram.constants import ParseMode
 from telegram.ext import Application, CommandHandler, ContextTypes, \
     MessageHandler, filters
 
@@ -18,18 +15,9 @@ BASE_DIR = os.path.dirname(__file__) or '.'
 
 
 async def error_handler(update: object,
-                        context: ContextTypes.DEFAULT_TYPE,
-                        telegram_chat_id: str) -> None:
+                        context: ContextTypes.DEFAULT_TYPE, ) -> None:
     """Log the error and send a telegram message to notify the developer."""
-    traceback_message = "".join(
-        traceback.format_exception_only(None, context.error))
-    message = (
-        f"An exception was raised:\n \
-        <pre>{html.escape(traceback_message)}</pre>"
-    )
-    await context.bot.send_message(
-        chat_id=telegram_chat_id, text=message, parse_mode=ParseMode.HTML
-    )
+    logger.exception(context.error)
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
